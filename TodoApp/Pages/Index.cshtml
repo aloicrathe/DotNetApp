@@ -1,0 +1,29 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Todo List";
+}
+
+<h1>Todo List</h1>
+
+<form method="post" asp-page-handler="Add">
+    <input type="text" name="title" placeholder="New todo..." required />
+    <button type="submit">Add</button>
+</form>
+
+<ul>
+    @foreach (var todo in Model.Todos)
+    {
+        <li>
+            <form method="post" asp-page-handler="Toggle" style="display:inline">
+                <input type="hidden" name="id" value="@todo.Id" />
+                <input type="checkbox" onchange="this.form.submit()" checked="@todo.IsDone" />
+            </form>
+            <span style="text-decoration:@(todo.IsDone ? "line-through" : "none")">@todo.Title</span>
+            <form method="post" asp-page-handler="Delete" style="display:inline">
+                <input type="hidden" name="id" value="@todo.Id" />
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    }
+</ul>
