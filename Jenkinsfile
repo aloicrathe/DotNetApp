@@ -23,7 +23,7 @@ pipeline {
                       chmod +x ~/.docker/cli-plugins/docker-compose
                     fi
 
-                    DOCKER_HOST=ssh://aloic@192.0.2.10 docker compose up -d --build
+                     docker compose up -d --build
                 '''
             }
         }
