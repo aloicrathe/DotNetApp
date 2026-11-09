@@ -23,8 +23,18 @@ pipeline {
                       chmod +x ~/.docker/cli-plugins/docker-compose
                     fi
 
-                     docker compose up -d --build
+                    docker compose -p todoapp up -d --build
                 '''
+            }
+        }
+        stage('Wait for database') {
+            steps {
+                timeout(time: 60, unit: 'SECONDS') {
+                    waitUntil {
+                        sh(script: 'docker exec todoappdb mariadb-admin ping -uroot -psekrit --silent',
+                           returnStatus: true) == 0
+                    }
+                }
             }
         }
         stage('Test') {
