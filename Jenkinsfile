@@ -31,8 +31,10 @@ pipeline {
             steps {
                 timeout(time: 60, unit: 'SECONDS') {
                     waitUntil {
-                        sh(script: 'docker exec todoappdb mariadb-admin ping -uroot -psekrit --silent',
-                           returnStatus: true) == 0
+                        script {
+                            sh(script: 'docker exec todoappdb mariadb-admin ping -uroot -psekrit --silent',
+                               returnStatus: true) == 0
+                        }
                     }
                 }
             }
