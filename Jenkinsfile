@@ -13,18 +13,10 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build') {
+        stage('Build & deploy staging') {
             steps {
-                sh '''
-                    if [ ! -f ~/.docker/cli-plugins/docker-compose ]; then
-                      mkdir -p ~/.docker/cli-plugins
-                      curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
-                        -o ~/.docker/cli-plugins/docker-compose
-                      chmod +x ~/.docker/cli-plugins/docker-compose
-                    fi
-
-                    docker compose -p todoapp up -d --build
-                '''
+                // Docker Compose is now installed in the Jenkins image
+                sh 'docker compose -p todoapp up -d --build'
             }
         }
         stage('Wait for database') {
@@ -65,6 +57,15 @@ _EOF_
                       mcr.microsoft.com/dotnet/sdk:10.0 \
                       dotnet test
                 '''
+            }
+        }
+        stage('Deploy production') {
+            steps {
+                sshagent(credentials: ['dmz010-deploy']) {
+                    withEnv(['DOCKER_HOST=ssh://deploy@192.0.2.10']) {
+                        sh 'docker compose -p todoapp up -d --build'
+                    }
+                }
             }
         }
     }
