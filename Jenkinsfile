@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Build & deploy staging') {
             steps {
-                // Docker Compose is now installed in the Jenkins image
+                // Staging on infra010: app + its own database container
                 sh 'docker compose -p todoapp up -d --build'
             }
         }
@@ -61,9 +61,10 @@ _EOF_
         }
         stage('Deploy production') {
             steps {
+                // Production on dmz010: only the app, database on dmz020
                 sshagent(credentials: ['dmz010-deploy']) {
                     withEnv(['DOCKER_HOST=ssh://deploy@192.0.2.10']) {
-                        sh 'docker compose -p todoapp up -d --build'
+                        sh 'docker compose -p todoapp -f docker-compose.prod.yml up -d --build --remove-orphans'
                     }
                 }
             }
