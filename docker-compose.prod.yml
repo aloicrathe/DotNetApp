@@ -1,0 +1,12 @@
+# Production (dmz010): only the app, the database runs on dmz020
+services:
+  todoapp:
+    build:
+      context: ./TodoApp
+    container_name: todoapp
+    environment:
+      ConnectionStrings__TodoDb: "Server=192.0.2.20;Port=3306;Database=db1;User=db1_user;Password=Holabs*123;"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "127.0.0.1:8085:8080"
+    restart: unless-stopped
